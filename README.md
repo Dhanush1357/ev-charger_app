@@ -1,4 +1,4 @@
-# EV-Charging App
+# EV-Charger App
 
 Download or clone the project file into your local machine using the commands.
 
