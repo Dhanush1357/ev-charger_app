@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, FlatList, View } from "react-native";
+import { Pressable, StyleSheet, Text } from "react-native";
 import React from "react";
 
 const Cbutton = (props) => {
@@ -19,13 +19,13 @@ const styles = StyleSheet.create({
 		position: "absolute",
 		bottom: 20,
 		left: 10,
-		height: 230,
+		height: 50,
 		width: 180,
 		backgroundColor: "#191919",
 		marginRight: 10,
 	},
 	title: {
-		fontSize: 18,
+		fontSize: 15,
 		color: "#fff",
 		fontWeight: "bold",
 	},
