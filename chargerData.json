@@ -10,7 +10,7 @@
 				"latitude": 12.901505,
 				"longitude": 77.634432
 			},
-			"connector_types": ["lvl1dc-2", "lvl2dc-1", "normalac-1"]
+			"connector_types": ["lvl 1 dc-2", "lvl 2 dc-1", "normal ac-1"]
 		},
 		{
 			"id": "a002",
@@ -22,7 +22,7 @@
 				"latitude": 12.961067,
 				"longitude": 77.642162
 			},
-			"connector_types": ["lvl1dc-2", "lvl2dc-1", "normalac-1"]
+			"connector_types": ["lvl 1 dc-2", "lvl 2 dc-1", "normal ac-1"]
 		},
 		{
 			"id": "a003",
@@ -34,19 +34,7 @@
 				"latitude": 12.999874,
 				"longitude": 77.564263
 			},
-			"connector_types": ["lvl1dc-2", "lvl2dc-1", "normalac-1"]
-		},
-		{
-			"id": "a004",
-			"name": "expressway charging - mariam enterprise",
-			"address": "Bangalore",
-			"distance": "2102",
-			"distance_metrics": "metres",
-			"location": {
-				"latitude": 12.92744,
-				"longitude": 77.545507
-			},
-			"connector_types": ["lvl1dc-2", "lvl2dc-1", "normalac-1"]
+			"connector_types": ["lvl 1 dc-2", "lvl 2 dc-1", "normal ac-1"]
 		}
 	]
 }
