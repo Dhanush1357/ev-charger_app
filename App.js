@@ -49,16 +49,6 @@ export default function App() {
 		});
 	};
 
-	const supportedConnectors = () => {
-		return data.chargers.map((item, index) => {
-			return (
-				<Marker key={index} coordinate={item.location} title={item.name}>
-					<FontAwesome size={30} name="map-pin" fade style={{ color: "#ff2424" }} />
-				</Marker>
-			);
-		});
-	};
-
 	//CardView of markers
 	const showChargerDetails = () => {
 		return data.chargers.map((item, index) => {
@@ -189,7 +179,6 @@ const styles = StyleSheet.create({
 		color: "#8a8a91",
 		fontWeight: "bold",
 	},
-
 	scrollView: {
 		position: "absolute",
 		bottom: 0,
