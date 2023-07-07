@@ -1,17 +1,17 @@
 import React, { useRef, useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
-import { StyleSheet, Touchable, View, Text } from "react-native";
+import { StyleSheet, View, Text, ScrollView, Animated, TouchableOpacity, Dimensions, Platform } from "react-native";
 import * as FileSystem from "expo-file-system";
 import { shareAsync } from "expo-sharing";
-import Cbutton from "./components/floatingButton";
 import { FontAwesome } from "@expo/vector-icons";
-
+import Cbutton from "./components/floatingButton";
+import FAB from "./components/chargerDetails";
 import * as Location from "expo-location";
 import { api } from "./axios/constants";
 import axios from "axios";
 
 export default function App() {
-	//location and map
+	//Initial Map Region
 	const mapRef = useRef();
 	const [mapRegion, setMapRegion] = useState({
 		latitude: 28.635741,
@@ -20,7 +20,7 @@ export default function App() {
 		longitudeDelta: 0.005,
 	});
 
-	//get permission and location of the user
+	//Get permission and location of the user
 	const userLocation = async () => {
 		let { status } = await Location.requestForegroundPermissionsAsync();
 		if (status !== "granted") {
@@ -34,16 +34,16 @@ export default function App() {
 			longitudeDelta: 0.2,
 		});
 	};
-
 	useEffect(() => {
 		userLocation();
 	}, []);
 
-	//markers
+	//Markers of chargers location
+	const data = require("./chargerData.json");
 	const showLocationsOfInterest = () => {
-		return locationsOfInterest.map((item, index) => {
+		return data.chargers.map((item, index) => {
 			return (
-				<Marker key={index} coordinate={item.location}>
+				<Marker key={index} coordinate={item.location} title={item.name}>
 					<FontAwesome size={30} name="map-pin" fade style={{ color: "#ff2424" }} />
 				</Marker>
 			);
@@ -54,13 +54,18 @@ export default function App() {
 	const takeSnapshotAndShare = async () => {
 		const snapshot = await mapRef.current.takeSnapshot({ width: 500, height: 800, result: "base64" });
 		const uri = FileSystem.documentDirectory + "snapshot.webp";
+
+		//save and share file locally
+		await FileSystem.writeAsStringAsync(uri, snapshot, { encoding: FileSystem.EncodingType.Base64 });
+		await shareAsync(uri);
+
+		//sending snapshot to API
+		/*	
 		const share = new FormData();
 		share.append({
 			file: uri,
 		});
-
 		console.log("Form Data", share._parts[(0, 0)]);
-
 		axios({
 			method: "POST",
 			url: api,
@@ -72,70 +77,33 @@ export default function App() {
 			.catch((error) => {
 				console.log("error uploading", error);
 			});
-		//save and share file locally
-		/*await FileSystem.writeAsStringAsync(uri, snapshot, { encoding: FileSystem.EncodingType.Base64 });
-		 await shareAsync(uri);*/
+			*/
 	};
 
 	//mainscreen
 	return (
-		<View>
+		<View style={styles.mainContainer}>
 			<MapView ref={mapRef} style={styles.map} region={mapRegion}>
 				{showLocationsOfInterest()}
 				<Marker coordinate={mapRegion}>
 					<FontAwesome size={30} name="location-arrow" beatFade style={{ color: "#da36dd" }} />
 				</Marker>
 			</MapView>
-
-			<View style={styles.container}>
-				<View style={styles.containerButton}>
-					<Cbutton onPress={takeSnapshotAndShare} title="Screenshot and Share"></Cbutton>
-				</View>
-			</View>
+			<Cbutton onPress={takeSnapshotAndShare} title="Sharee"></Cbutton>
 		</View>
 	);
 }
 
-//coordinates of dummy markers
-let locationsOfInterest = [
-	{
-		location: {
-			latitude: 12.901505,
-			longitude: 77.634432,
-		},
-	},
-	{
-		location: {
-			latitude: 12.961067,
-			longitude: 77.642162,
-		},
-	},
-	{
-		location: {
-			latitude: 12.999874,
-			longitude: 77.564263,
-		},
-	},
-	{
-		location: {
-			latitude: 12.92744,
-			longitude: 77.545507,
-		},
-	},
-];
-
 //styles
 const styles = StyleSheet.create({
+	mainContainer: {
+		flex: 1,
+	},
 	container: {
 		flex: 1,
-		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "center",
 	},
-	containerButton: {
-		flex: 1,
-	},
-
 	map: {
 		width: "100%",
 		height: "100%",

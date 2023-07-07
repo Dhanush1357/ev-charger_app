@@ -1,9 +1,9 @@
-import { Pressable, StyleSheet, Text } from "react-native";
-import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import * as React from "react";
 
-const Cbutton = (props) => {
+Cbutton = (props) => {
 	return (
-		<Pressable style={styles.container} onPress={props.onPress}>
+		<Pressable style={styles.btnContainer} onPress={props.onPress}>
 			<Text style={styles.title}>{props.title}</Text>
 		</Pressable>
 	);
@@ -12,20 +12,19 @@ const Cbutton = (props) => {
 export default Cbutton;
 
 const styles = StyleSheet.create({
-	container: {
+	btnContainer: {
 		justifyContent: "center",
 		alignItems: "center",
-		borderRadius: 10,
+		borderRadius: 50,
 		position: "absolute",
-		bottom: 20,
-		left: 10,
+		top: 40,
+		right: 10,
 		height: 50,
-		width: 180,
+		width: 80,
 		backgroundColor: "#191919",
-		marginRight: 10,
 	},
 	title: {
-		fontSize: 15,
+		fontSize: 14,
 		color: "#fff",
 		fontWeight: "bold",
 	},
