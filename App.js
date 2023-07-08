@@ -171,7 +171,6 @@ export default function App() {
 				</Marker>
 			</MapView>
 			<Cbutton onPress={takeSnapshotAndShare} title="Share"></Cbutton>
-
 			<Animated.ScrollView
 				horizontal
 				showsHorizontalScrollIndicator={false}
@@ -233,6 +232,7 @@ const styles = StyleSheet.create({
 		backgroundColor: "#191919",
 		borderRadius: 10,
 		marginHorizontal: 30,
+		marginVertical: 40,
 		overflow: "hidden",
 	},
 	cardTitle: {
