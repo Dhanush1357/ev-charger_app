@@ -10,8 +10,16 @@ import { api } from "./axios/constants";
 import axios from "axios";
 
 export default function App() {
-	//Initial Map Region
+	const { width, height } = Dimensions.get("window");
+	const CARD_WIDTH = width * 0.7;
+	const SPACING_FOR_CARD_INSET = width * 0.1;
 	const mapRef = useRef();
+	const _scrollView = React.useRef(null);
+
+	let mapIndex = 0;
+	let mapAnimation = new Animated.Value(0);
+
+	//Initial Map Region
 	const [mapRegion, setMapRegion] = useState({
 		latitude: 28.635741,
 		longitude: 77.219986,
@@ -29,20 +37,22 @@ export default function App() {
 		setMapRegion({
 			latitude: location.coords.latitude,
 			longitude: location.coords.longitude,
-			latitudeDelta: 0.3,
-			longitudeDelta: 0.2,
+			latitudeDelta: 0.1,
+			longitudeDelta: 0.3,
 		});
 	};
 	useEffect(() => {
 		userLocation();
 	}, []);
 
-	//Markers of chargers location
+	//Importing json data
 	const data = require("./chargerData.json");
+
+	//Markers of chargers location
 	const showLocationsOfMarker = () => {
 		return data.chargers.map((item, index) => {
 			return (
-				<Marker key={index} coordinate={item.location} title={item.name}>
+				<Marker onPress={(e) => onMarkerPress(e)} key={index} coordinate={item.location} title={item.name}>
 					<FontAwesome size={30} name="map-pin" fade style={{ color: "#ff2424" }} />
 				</Marker>
 			);
@@ -85,6 +95,42 @@ export default function App() {
 		});
 	};
 
+	//Mapping cards to markers
+	useEffect(() => {
+		mapAnimation.addListener(({ value }) => {
+			let index = Math.floor(value / CARD_WIDTH + 0.3);
+			if (index >= data.chargers.length) {
+				index = data.chargers.length - 1;
+			}
+			if (index <= 0) {
+				index = 0;
+			}
+
+			clearTimeout(regionTimeout);
+			//Changing the RegionView to current card on screen
+			const regionTimeout = setTimeout(() => {
+				if (mapIndex !== index) {
+					mapIndex = index;
+					const { location } = data.chargers[index];
+					mapRef.current.animateToRegion({
+						...location,
+						latitudeDelta: 0.1,
+						longitudeDelta: 0.1,
+					});
+				}
+			});
+		});
+	});
+
+	//Mapping markers to cards
+	const onMarkerPress = (mapEventData) => {
+		const markerID = mapEventData._targetInst.return.key;
+
+		let x = markerID * CARD_WIDTH + markerID * 20;
+
+		_scrollView.current.scrollTo({ x: x, y: 0, animated: true });
+	};
+
 	//screenshot and share
 	const takeSnapshotAndShare = async () => {
 		const snapshot = await mapRef.current.takeSnapshot({ width: 500, height: 800, result: "base64" });
@@ -115,17 +161,42 @@ export default function App() {
 			*/
 	};
 
-	//mainscreen
+	//MainScreen
 	return (
 		<View style={styles.mainContainer}>
 			<MapView ref={mapRef} style={styles.map} region={mapRegion}>
 				{showLocationsOfMarker()}
-				<Marker coordinate={mapRegion}>
+				<Marker coordinate={mapRegion} title="Your Location">
 					<FontAwesome size={30} name="location-arrow" beatFade style={{ color: "#da36dd" }} />
 				</Marker>
 			</MapView>
-			<Cbutton onPress={takeSnapshotAndShare} title="Sharee"></Cbutton>
-			<Animated.ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.scrollView}>
+			<Cbutton onPress={takeSnapshotAndShare} title="Share"></Cbutton>
+
+			<Animated.ScrollView
+				horizontal
+				showsHorizontalScrollIndicator={false}
+				ref={_scrollView}
+				pagingEnabled
+				decelerationRate={"normal"}
+				snapToInterval={340}
+				snapToAlignment="center"
+				style={styles.scrollView}
+				contentContainerStyle={{
+					paddingHorizontal: Platform.OS === "android" ? SPACING_FOR_CARD_INSET : 0,
+				}}
+				onScroll={Animated.event(
+					[
+						{
+							nativeEvent: {
+								contentOffset: {
+									x: mapAnimation,
+								},
+							},
+						},
+					],
+					{ useNativeDriver: true }
+				)}
+			>
 				{showChargerDetails()}
 			</Animated.ScrollView>
 		</View>
@@ -158,10 +229,10 @@ const styles = StyleSheet.create({
 	card: {
 		elevation: 2,
 		height: 225,
-		width: 200,
+		width: 225,
 		backgroundColor: "#191919",
 		borderRadius: 10,
-		marginHorizontal: 5,
+		marginHorizontal: 30,
 		overflow: "hidden",
 	},
 	cardTitle: {
